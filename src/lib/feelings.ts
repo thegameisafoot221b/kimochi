@@ -2,7 +2,7 @@ export type FaceType =
   | 'happy' | 'excited' | 'proud' | 'relieved' | 'grateful' | 'hopeful' | 'loving' | 'calm'
   | 'sad' | 'lonely' | 'tired' | 'bored' | 'content'
   | 'angry' | 'frustrated' | 'jealous' | 'disgusted'
-  | 'scared' | 'anxious' | 'worried' | 'nervous' | 'shocked' | 'confused';
+  | 'scared' | 'anxious' | 'worried' | 'nervous' | 'shocked' | 'surprised' | 'confused';
 
 export type SceneKey =
   | 'gift' | 'star' | 'heart' | 'sun' | 'friends' | 'praise' | 'music' | 'food' | 'hug'
