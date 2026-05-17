@@ -657,6 +657,9 @@ rt {
 
 .setup-step {
   padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .setup-q {
@@ -710,6 +713,19 @@ rt {
 .setup-age-unit {
   font-size: 20px;
   color: #555;
+}
+
+.setup-grade {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--purple);
+  background: var(--purple-light);
+  border-radius: 20px;
+  padding: 6px 16px;
+  display: inline-block;
+  align-self: center;
 }
 
 .setup-choices {
@@ -1095,6 +1111,26 @@ rt {
   gap: 0;
 }
 
+.settings-close-btn {
+  display: block;
+  width: 100%;
+  padding: 13px 0;
+  background: var(--purple-light);
+  color: var(--purple);
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: background 0.15s;
+}
+
+.settings-close-btn:hover {
+  background: #dddcfc;
+}
+
 .settings-sec {
   padding: 16px 0;
   border-bottom: 1px solid #f0efeb;
@@ -1122,6 +1158,22 @@ rt {
   font-size: 11px;
   color: #aaa;
   margin-bottom: 10px;
+}
+
+.settings-warn {
+  font-size: 12px;
+  color: #d03030;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.ntfy-hint-sub {
+  color: #e08050;
+}
+
+.ntfy-save-note {
+  color: #888;
+  margin-top: 6px;
 }
 
 .settings-label {
@@ -1290,4 +1342,113 @@ rt {
 
 .settings-add-btn:not(:disabled):hover {
   background: var(--purple-dark);
+}
+
+/* ── Settings toggle ── */
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0 4px;
+}
+
+.settings-toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.settings-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.settings-toggle-desc {
+  font-size: 11px;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.settings-toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border-radius: 14px;
+  border: none;
+  background: #ccc;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.settings-toggle.on {
+  background: var(--purple);
+}
+
+.settings-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: left 0.2s;
+}
+
+.settings-toggle.on .settings-toggle-knob {
+  left: 23px;
+}
+
+/* ── 記録しないボタン ── */
+.result-action-btns {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.no-save-btn {
+  width: 100%;
+  background: #f5f4f0;
+  color: #888;
+  border: 1.5px solid #e5e4e0;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.no-save-btn:hover {
+  background: #eeedea;
+}
+
+/* ── LINE自動送信の案内 ── */
+.line-auto-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e8f8ee;
+  border: 1.5px solid #4caf78;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2e6b4a;
+  width: 100%;
+  margin-bottom: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+.line-auto-icon {
+  font-size: 18px;
+  flex-shrink: 0;
 }

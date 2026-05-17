@@ -3,6 +3,24 @@ import { useState } from 'react';
 import type { Profile } from '@/lib/types';
 import { parseRuby } from '@/lib/ruby';
 
+function ageToGrade(age: number): string {
+  if (age <= 0) return '';
+  if (age <= 5) return '未就学《みしゅうがく》（幼児《ようじ》）';
+  if (age === 6) return '小学《しょうがく》1年生《ねんせい》';
+  if (age === 7) return '小学《しょうがく》2年生《ねんせい》';
+  if (age === 8) return '小学《しょうがく》3年生《ねんせい》';
+  if (age === 9) return '小学《しょうがく》4年生《ねんせい》';
+  if (age === 10) return '小学《しょうがく》5年生《ねんせい》';
+  if (age === 11) return '小学《しょうがく》6年生《ねんせい》';
+  if (age === 12) return '中学《ちゅうがく》1年生《ねんせい》';
+  if (age === 13) return '中学《ちゅうがく》2年生《ねんせい》';
+  if (age === 14) return '中学《ちゅうがく》3年生《ねんせい》';
+  if (age === 15) return '高校《こうこう》1年生《ねんせい》';
+  if (age === 16) return '高校《こうこう》2年生《ねんせい》';
+  if (age === 17) return '高校《こうこう》3年生《ねんせい》';
+  return '18歳《さい》以上《いじょう》';
+}
+
 export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) => void }) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
@@ -22,6 +40,7 @@ export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) 
       age: Math.max(1, parseInt(age) || 10),
       environments: envs.length ? envs : ['home'],
       style: style.length ? style : ['alone'],
+      autoSave: true,
     });
   }
 
@@ -94,6 +113,9 @@ export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) 
                   />
                   <span className="setup-age-unit">さい</span>
                 </div>
+                {age && parseInt(age) > 0 && (
+                  <p className="setup-grade" dangerouslySetInnerHTML={{ __html: parseRuby(ageToGrade(parseInt(age))) }} />
+                )}
               </>
             )}
 
@@ -102,12 +124,12 @@ export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) 
                 <p className="setup-q" dangerouslySetInnerHTML={{ __html: parseRuby('どこで使《つか》いますか？') }} />
                 <p className="setup-sub">いくつでも選べるよ</p>
                 <div className="setup-choices">
-                  {(['home', 'school'] as const).map((e, i) => (
+                  {(['home', 'school', 'other'] as const).map((e, i) => (
                     <button
                       key={e}
                       className={`setup-choice ${envs.includes(e) ? 'on' : ''}`}
                       onClick={() => setEnvs(toggle(envs, e))}
-                      dangerouslySetInnerHTML={{ __html: parseRuby(['家《いえ》', '学校《がっこう》・施設《しせつ》'][i]) }}
+                      dangerouslySetInnerHTML={{ __html: parseRuby(['家《いえ》', '学校《がっこう》・施設《しせつ》', 'その他《た》'][i]) }}
                     />
                   ))}
                 </div>
@@ -117,13 +139,12 @@ export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) 
             {step === 4 && (
               <>
                 <p className="setup-q" dangerouslySetInnerHTML={{ __html: parseRuby('どのように使《つか》いますか？') }} />
-                <p className="setup-sub">いくつでも選べるよ</p>
                 <div className="setup-choices">
                   {(['alone', 'with_supporter'] as const).map((s, i) => (
                     <button
                       key={s}
-                      className={`setup-choice ${style.includes(s) ? 'on' : ''}`}
-                      onClick={() => setStyle(toggle(style, s))}
+                      className={`setup-choice ${style[0] === s ? 'on' : ''}`}
+                      onClick={() => setStyle([s])}
                       dangerouslySetInnerHTML={{ __html: parseRuby(['自分《じぶん》ひとりで', '支援者《しえんしゃ》と一緒《いっしょ》に'][i]) }}
                     />
                   ))}

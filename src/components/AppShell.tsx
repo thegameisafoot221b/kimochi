@@ -86,6 +86,7 @@ export default function AppShell() {
           <Settings
             profile={profile}
             onProfileUpdate={(p) => { saveProfile(p); setProfile(p); }}
+            onClose={() => setScreen('home')}
           />
         )}
 
