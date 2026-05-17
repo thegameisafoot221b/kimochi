@@ -13,8 +13,10 @@ function R({ t, className }: { t: string; className?: string }) {
 }
 
 function sendNtfy(profile: Profile, feeling: Feeling, intensityWord: string) {
-  if (!profile.ntfyTopic) return;
+  console.log('[ntfy] topic:', profile.ntfyTopic);
+  if (!profile.ntfyTopic) { console.log('[ntfy] トピックなし、スキップ'); return; }
   const cleanName = feeling.name.replace(/《[^》]+》/g, '');
+  console.log('[ntfy] 送信開始:', `https://ntfy.sh/${profile.ntfyTopic}`);
   fetch(`https://ntfy.sh/${profile.ntfyTopic}`, {
     method: 'POST',
     body: `${intensityWord}${cleanName}`,
@@ -22,7 +24,8 @@ function sendNtfy(profile: Profile, feeling: Feeling, intensityWord: string) {
       'Title': `${profile.name}の気持ちの記録`,
       'Tags': 'heart',
     },
-  }).catch(() => {});
+  }).then(r => console.log('[ntfy] 成功:', r.status))
+    .catch(e => console.log('[ntfy] エラー:', e));
 }
 
 function formatShareMessage(profile: Profile, feeling: Feeling, cat: Category, intensityWord: string, sceneText: string | undefined, memo: string): string {
