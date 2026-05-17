@@ -1,9 +1,5 @@
-import KimochiApp from '@/components/KimochiApp';
+import AppShell from '@/components/AppShell';
 
 export default function Home() {
-  return (
-    <main className="page-wrapper">
-      <KimochiApp />
-    </main>
-  );
+  return <AppShell />;
 }

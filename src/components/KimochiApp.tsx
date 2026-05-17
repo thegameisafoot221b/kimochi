@@ -5,21 +5,49 @@ import { CATEGORIES, INTENSITY_WORDS, Category, Feeling } from '@/lib/feelings';
 import { buildFaceSVG } from '@/lib/faceSvg';
 import { buildSceneSVG } from '@/lib/sceneSvg';
 import { parseRuby } from '@/lib/ruby';
+import { addRecord, getRecipients } from '@/lib/storage';
+import type { Profile, ShareRecipient } from '@/lib/types';
 
 function R({ t, className }: { t: string; className?: string }) {
   return <span className={className} dangerouslySetInnerHTML={{ __html: parseRuby(t) }} />;
 }
 
-export default function KimochiApp() {
+function formatShareMessage(profile: Profile, feeling: Feeling, cat: Category, intensity: number, intensityWord: string, sceneText: string | undefined, memo: string): string {
+  const now = new Date();
+  const dt = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${now.getHours()}時${String(now.getMinutes()).padStart(2, '0')}分`;
+  const cleanName = feeling.name.replace(/《[^》]+》/g, '');
+  const cleanScene = sceneText ? sceneText.replace(/《[^》]+》/g, '') : '';
+
+  let msg = `【${profile.name}の気持ちの記録】\n${dt}\n\n`;
+  msg += `気持ち：${intensityWord}${cleanName}（${cat.label}）\n`;
+  if (cleanScene) msg += `きっかけ：${cleanScene}\n`;
+  if (memo.trim()) msg += `メモ：${memo.trim()}\n`;
+  return msg;
+}
+
+function shareToRecipient(r: ShareRecipient, message: string) {
+  if (r.type === 'email') {
+    const subject = encodeURIComponent(`気持ちの記録`);
+    const body = encodeURIComponent(message);
+    window.open(`mailto:${r.value}?subject=${subject}&body=${body}`);
+  } else {
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(message)}`);
+  }
+}
+
+export default function KimochiApp({ profile }: { profile: Profile }) {
   const [phase, setPhase] = useState<'select' | 'result'>('select');
   const [catIdx, setCatIdx] = useState(0);
   const [selIdx, setSelIdx] = useState<number | null>(null);
   const [selSceneIdx, setSelSceneIdx] = useState<number | null>(null);
   const [intensity, setIntensity] = useState(3);
+  const [memo, setMemo] = useState('');
+  const [saved, setSaved] = useState(false);
 
   const cat: Category = CATEGORIES[catIdx];
   const feeling: Feeling | null = selIdx !== null ? cat.feelings[selIdx] : null;
   const selScene = selSceneIdx !== null && feeling ? feeling.scenes[selSceneIdx] : null;
+  const recipients = getRecipients();
 
   function selectCat(i: number) {
     setCatIdx(i);
@@ -41,32 +69,47 @@ export default function KimochiApp() {
     setPhase('result');
   }
 
+  function handleSave() {
+    if (!feeling) return;
+    addRecord({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      timestamp: new Date().toISOString(),
+      feelingId: feeling.id,
+      feelingName: feeling.name,
+      categoryId: cat.id,
+      categoryLabel: cat.label,
+      categoryColor: cat.color,
+      sceneKey: selScene?.key,
+      sceneText: selScene?.text,
+      intensity,
+      intensityWord: INTENSITY_WORDS[intensity - 1],
+      memo,
+    });
+    setSaved(true);
+  }
+
+  function handleShare(r: ShareRecipient) {
+    if (!feeling) return;
+    const msg = formatShareMessage(profile, feeling, cat, intensity, INTENSITY_WORDS[intensity - 1], selScene?.text, memo);
+    shareToRecipient(r, msg);
+  }
+
   function handleReset() {
     setPhase('select');
     setSelIdx(null);
     setSelSceneIdx(null);
     setIntensity(3);
+    setMemo('');
+    setSaved(false);
   }
 
   const intensityHeights = [9, 14, 21, 28, 36];
-
   const faceSize = 80 + (intensity - 1) * 10;
   const blobSize = 130 + (intensity - 1) * 28;
   const blobOpacity = 0.18 + (intensity - 1) * 0.05;
 
   return (
-    <div className="app-wrap">
-      {/* Header */}
-      <div className="top-bar">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="11" cy="11" r="10" stroke="#EEEDFE" strokeWidth="1.5" />
-          <circle cx="8" cy="9" r="1.3" fill="#EEEDFE" />
-          <circle cx="14" cy="9" r="1.3" fill="#EEEDFE" />
-          <path d="M7 14c1 1.3 8 1.3 8 0" stroke="#EEEDFE" strokeWidth="1.4" strokeLinecap="round" />
-        </svg>
-        <R t="気持《きも》ちを選《えら》ぼう" className="top-bar-title" />
-      </div>
-
+    <>
       {phase === 'select' ? (
         <div className="app-body">
           {/* Category tabs */}
@@ -129,7 +172,6 @@ export default function KimochiApp() {
                 ))}
               </div>
 
-              {/* Intensity */}
               <R t="どのくらいの気持《きも》ち？" className="int-label" />
               <div className="int-bars">
                 {intensityHeights.map((h, i) => (
@@ -156,36 +198,23 @@ export default function KimochiApp() {
           )}
         </div>
       ) : (
-        /* ── Result screen ── */
         <div className="result-body">
           <R t="気持《きも》ちを伝《つた》えました！" className="result-title" />
 
-          {/* Hero: face + glow blob, both scale with intensity */}
+          {/* Hero */}
           <div className="result-hero">
             <div
               className="result-blob"
-              style={{
-                width: blobSize,
-                height: blobSize,
-                background: cat.color,
-                opacity: blobOpacity,
-              }}
+              style={{ width: blobSize, height: blobSize, background: cat.color, opacity: blobOpacity }}
             />
-            <div
-              className="result-face"
-              dangerouslySetInnerHTML={{ __html: buildFaceSVG(feeling!.id, faceSize) }}
-            />
+            <div className="result-face" dangerouslySetInnerHTML={{ __html: buildFaceSVG(feeling!.id, faceSize) }} />
           </div>
 
-          {/* Feeling name + intensity word */}
           <div className="result-feeling-row">
-            <span className="result-iword" style={{ color: cat.color }}>
-              {INTENSITY_WORDS[intensity - 1]}
-            </span>
+            <span className="result-iword" style={{ color: cat.color }}>{INTENSITY_WORDS[intensity - 1]}</span>
             <R t={feeling!.name} className="result-fname" />
           </div>
 
-          {/* Scene / cause */}
           {selScene ? (
             <div className="result-scene">
               <p className="result-scene-label">なぜかというと</p>
@@ -198,7 +227,6 @@ export default function KimochiApp() {
             <div className="result-scene-gap" />
           )}
 
-          {/* Intensity bar (read-only) */}
           <div className="result-intensity">
             <R t="気持《きも》ちの大《おお》きさ" className="result-int-label" />
             <div className="result-int-bars">
@@ -221,6 +249,46 @@ export default function KimochiApp() {
             </div>
           </div>
 
+          {/* Memo */}
+          <div className="memo-section">
+            <label className="memo-label" dangerouslySetInnerHTML={{ __html: parseRuby('メモ（任意《にんい》）') }} />
+            <textarea
+              className="memo-textarea"
+              placeholder="ひとことメモを書けるよ"
+              value={memo}
+              onChange={e => setMemo(e.target.value)}
+              rows={2}
+              disabled={saved}
+            />
+          </div>
+
+          {/* Save */}
+          {!saved ? (
+            <button
+              className="save-btn"
+              onClick={handleSave}
+              dangerouslySetInnerHTML={{ __html: parseRuby('記録《きろく》する') }}
+            />
+          ) : (
+            <div className="saved-banner" dangerouslySetInnerHTML={{ __html: parseRuby('記録《きろく》しました ✓') }} />
+          )}
+
+          {/* Share */}
+          {saved && recipients.length > 0 && (
+            <div className="share-section">
+              <p className="share-label" dangerouslySetInnerHTML={{ __html: parseRuby('送信《そうしん》する') }} />
+              {recipients.map(r => (
+                <button
+                  key={r.id}
+                  className="share-btn"
+                  onClick={() => handleShare(r)}
+                >
+                  {r.type === 'email' ? '✉' : 'LINE'} {r.name}に送る
+                </button>
+              ))}
+            </div>
+          )}
+
           <button
             className="retry-btn"
             onClick={handleReset}
@@ -228,6 +296,6 @@ export default function KimochiApp() {
           />
         </div>
       )}
-    </div>
+    </>
   );
 }
