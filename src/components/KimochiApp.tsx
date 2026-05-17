@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { CATEGORIES, INTENSITY_WORDS, Category, Feeling } from '@/lib/feelings';
 import { buildFaceSVG } from '@/lib/faceSvg';
 import { buildSceneSVG } from '@/lib/sceneSvg';
+import { parseRuby } from '@/lib/ruby';
+
+function R({ t, className }: { t: string; className?: string }) {
+  return <span className={className} dangerouslySetInnerHTML={{ __html: parseRuby(t) }} />;
+}
 
 export default function KimochiApp() {
   const [phase, setPhase] = useState<'select' | 'result'>('select');
@@ -45,7 +50,6 @@ export default function KimochiApp() {
 
   const intensityHeights = [9, 14, 21, 28, 36];
 
-  // Result screen visual parameters — face and blob scale with intensity
   const faceSize = 80 + (intensity - 1) * 10;
   const blobSize = 130 + (intensity - 1) * 28;
   const blobOpacity = 0.18 + (intensity - 1) * 0.05;
@@ -60,7 +64,7 @@ export default function KimochiApp() {
           <circle cx="14" cy="9" r="1.3" fill="#EEEDFE" />
           <path d="M7 14c1 1.3 8 1.3 8 0" stroke="#EEEDFE" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
-        <span className="top-bar-title">きもちをえらぼう</span>
+        <R t="気持《きも》ちを選《えら》ぼう" className="top-bar-title" />
       </div>
 
       {phase === 'select' ? (
@@ -79,9 +83,7 @@ export default function KimochiApp() {
             ))}
           </div>
 
-          <p className="q-label">
-            {cat.feelings.length}つのきもちから えらんでね
-          </p>
+          <R t={`${cat.feelings.length}つの気持《きも》ちから選《えら》んでね`} className="q-label" />
 
           {/* Feeling grid */}
           <div
@@ -95,7 +97,7 @@ export default function KimochiApp() {
                 onClick={() => selectFeeling(i)}
               >
                 <div dangerouslySetInnerHTML={{ __html: buildFaceSVG(f.id, 50) }} />
-                <span className="fname">{f.name}</span>
+                <R t={f.name} className="fname" />
               </button>
             ))}
           </div>
@@ -108,12 +110,12 @@ export default function KimochiApp() {
               <div className="detail-header">
                 <div dangerouslySetInnerHTML={{ __html: buildFaceSVG(feeling.id, 70) }} />
                 <div className="detail-info">
-                  <h3>{feeling.name}</h3>
-                  <p>{feeling.desc}</p>
+                  <h3 dangerouslySetInnerHTML={{ __html: parseRuby(feeling.name) }} />
+                  <p dangerouslySetInnerHTML={{ __html: parseRuby(feeling.desc) }} />
                 </div>
               </div>
 
-              <p className="scenes-label">こんなとき、このきもちになることがあるよ</p>
+              <R t="こんな時《とき》、この気持《きも》ちになることがあるよ" className="scenes-label" />
               <div className="scenes-grid">
                 {feeling.scenes.map((s, i) => (
                   <button
@@ -122,13 +124,13 @@ export default function KimochiApp() {
                     onClick={() => selectScene(i)}
                   >
                     <div className="scene-icon" dangerouslySetInnerHTML={{ __html: buildSceneSVG(s.key) }} />
-                    <span className="scene-text">{s.text}</span>
+                    <R t={s.text} className="scene-text" />
                   </button>
                 ))}
               </div>
 
               {/* Intensity */}
-              <p className="int-label">どのくらいの きもち？</p>
+              <R t="どのくらいの気持《きも》ち？" className="int-label" />
               <div className="int-bars">
                 {intensityHeights.map((h, i) => (
                   <button
@@ -145,16 +147,18 @@ export default function KimochiApp() {
                 <span>すごく</span>
               </div>
 
-              <button className="tell-btn" onClick={handleTell}>
-                つたえる！
-              </button>
+              <button
+                className="tell-btn"
+                onClick={handleTell}
+                dangerouslySetInnerHTML={{ __html: parseRuby('気持《きも》ちを伝《つた》える！') }}
+              />
             </div>
           )}
         </div>
       ) : (
         /* ── Result screen ── */
         <div className="result-body">
-          <p className="result-title">きもちをつたえました！</p>
+          <R t="気持《きも》ちを伝《つた》えました！" className="result-title" />
 
           {/* Hero: face + glow blob, both scale with intensity */}
           <div className="result-hero">
@@ -178,7 +182,7 @@ export default function KimochiApp() {
             <span className="result-iword" style={{ color: cat.color }}>
               {INTENSITY_WORDS[intensity - 1]}
             </span>
-            <span className="result-fname">{feeling!.name}</span>
+            <R t={feeling!.name} className="result-fname" />
           </div>
 
           {/* Scene / cause */}
@@ -187,7 +191,7 @@ export default function KimochiApp() {
               <p className="result-scene-label">なぜかというと</p>
               <div className="result-scene-card" style={{ borderColor: cat.color }}>
                 <div dangerouslySetInnerHTML={{ __html: buildSceneSVG(selScene.key) }} />
-                <span className="result-scene-text">{selScene.text}</span>
+                <R t={selScene.text} className="result-scene-text" />
               </div>
             </div>
           ) : (
@@ -196,7 +200,7 @@ export default function KimochiApp() {
 
           {/* Intensity bar (read-only) */}
           <div className="result-intensity">
-            <p className="result-int-label">きもちの大きさ</p>
+            <R t="気持《きも》ちの大《おお》きさ" className="result-int-label" />
             <div className="result-int-bars">
               {intensityHeights.map((h, i) => (
                 <div
@@ -217,9 +221,11 @@ export default function KimochiApp() {
             </div>
           </div>
 
-          <button className="retry-btn" onClick={handleReset}>
-            もう一度気持ちを伝え直す
-          </button>
+          <button
+            className="retry-btn"
+            onClick={handleReset}
+            dangerouslySetInnerHTML={{ __html: parseRuby('もう一度《いちど》気持《きも》ちを伝《つた》え直《なお》す') }}
+          />
         </div>
       )}
     </div>

@@ -19,6 +19,18 @@ html, body {
   color: #1a1a1a;
 }
 
+/* ── Furigana ── */
+ruby {
+  ruby-align: center;
+}
+
+rt {
+  font-size: 0.52em;
+  line-height: 1.2;
+  color: inherit;
+  opacity: 0.75;
+}
+
 /* ── Layout ── */
 .page-wrapper {
   min-height: 100vh;
