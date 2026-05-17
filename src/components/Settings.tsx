@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import type { Profile, ShareRecipient, EmotionMode } from '@/lib/types';
+import type { Profile, ShareRecipient } from '@/lib/types';
 import { saveProfile, getRecipients, saveRecipients } from '@/lib/storage';
 import { parseRuby } from '@/lib/ruby';
 
@@ -21,11 +21,10 @@ export default function Settings({ profile, onProfileUpdate, onClose }: Props) {
 
   const [autoSave, setAutoSave] = useState(profile.autoSave !== false);
   const [showDelete, setShowDelete] = useState(profile.showDelete !== false);
-  const [emotionMode, setEmotionMode] = useState<EmotionMode>(profile.emotionMode ?? 'original');
   const [ntfyTopic, setNtfyTopic] = useState(profile.ntfyTopic ?? '');
 
   function handleSaveProfile() {
-    const p = { ...profile, name: name.trim() || profile.name, age: parseInt(age) || profile.age, autoSave, showDelete, emotionMode, ntfyTopic: ntfyTopic.trim() || undefined };
+    const p = { ...profile, name: name.trim() || profile.name, age: parseInt(age) || profile.age, autoSave, showDelete, ntfyTopic: ntfyTopic.trim() || undefined };
     saveProfile(p);
     onProfileUpdate(p);
     setSaved(true);
@@ -82,25 +81,6 @@ export default function Settings({ profile, onProfileUpdate, onClose }: Props) {
           >
             <span className="settings-toggle-knob" />
           </button>
-        </div>
-
-        <div className="emotion-mode-select">
-          <p className="settings-label" dangerouslySetInnerHTML={{ __html: parseRuby('感情《かんじょう》の表現《ひょうげん》パターン') }} />
-          <div className="emotion-mode-cards">
-            {([
-              { value: 'original', title: 'オリジナル', desc: '24種類《しゅるい》の気持《きも》ち\n今まで通《どお》りのパターン' },
-              { value: 'plutchik', title: 'プルチック', desc: '8感情《かんじょう》×3段階《だんかい》\n心理学《しんりがく》理論《りろん》ベース' },
-            ] as const).map(opt => (
-              <button
-                key={opt.value}
-                className={`emotion-mode-card ${emotionMode === opt.value ? 'sel' : ''}`}
-                onClick={() => setEmotionMode(opt.value)}
-              >
-                <span className="emotion-mode-title">{opt.title}</span>
-                <span className="emotion-mode-desc" dangerouslySetInnerHTML={{ __html: parseRuby(opt.desc.replace('\n', '<br/>')) }} />
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="settings-toggle-row">

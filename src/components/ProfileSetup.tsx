@@ -42,7 +42,6 @@ export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) 
       style: style.length ? style : ['alone'],
       autoSave: true,
       showDelete: true,
-      emotionMode: 'original',
     });
   }
 

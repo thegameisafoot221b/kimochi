@@ -1,7 +1,6 @@
 import type { FaceType, SceneKey } from './feelings';
 
 export type Gender = 'male' | 'female' | 'other';
-export type EmotionMode = 'original' | 'plutchik';
 export type Environment = 'home' | 'school' | 'other';
 export type UsageStyle = 'alone' | 'with_supporter';
 
@@ -13,7 +12,6 @@ export interface Profile {
   style: UsageStyle[];
   autoSave: boolean;
   showDelete: boolean;
-  emotionMode: EmotionMode;
   ntfyTopic?: string;
 }
 

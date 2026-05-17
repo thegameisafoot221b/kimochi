@@ -4,7 +4,6 @@ import { getProfile, saveProfile } from '@/lib/storage';
 import type { Profile } from '@/lib/types';
 import ProfileSetup from './ProfileSetup';
 import KimochiApp from './KimochiApp';
-import PluChikApp from './PluChikApp';
 import CalendarView from './CalendarView';
 import Settings from './Settings';
 import { parseRuby } from '@/lib/ruby';
@@ -81,11 +80,7 @@ export default function AppShell() {
           <span className="top-bar-name">{profile.name}</span>
         </div>
 
-        {screen === 'home' && (
-          profile.emotionMode === 'plutchik'
-            ? <PluChikApp profile={profile} />
-            : <KimochiApp profile={profile} />
-        )}
+        {screen === 'home' && <KimochiApp profile={profile} />}
         {screen === 'calendar' && <CalendarView showDelete={profile.showDelete !== false} />}
         {screen === 'settings' && (
           <Settings
