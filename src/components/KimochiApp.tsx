@@ -206,6 +206,7 @@ export default function KimochiApp({ profile }: { profile: Profile }) {
                 </div>
               </div>
               <R t="こんな時《とき》、この気持《きも》ちになることがあるよ" className="scenes-label" />
+              <R t="当《あ》てはまるものがあったら選《えら》んでみよう" className="scenes-sublabel" />
               <div className="scenes-grid">
                 {feeling.scenes.map((s, i) => (
                   <button key={i} className={`scene-card ${selSceneIdx === i ? 'sel' : ''}`} onClick={() => selectScene(i)}>

@@ -81,7 +81,7 @@ export default function AppShell() {
         </div>
 
         {screen === 'home' && <KimochiApp profile={profile} />}
-        {screen === 'calendar' && <CalendarView />}
+        {screen === 'calendar' && <CalendarView showDelete={profile.showDelete !== false} />}
         {screen === 'settings' && (
           <Settings
             profile={profile}

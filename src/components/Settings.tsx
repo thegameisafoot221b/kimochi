@@ -20,10 +20,11 @@ export default function Settings({ profile, onProfileUpdate, onClose }: Props) {
   const [saved, setSaved] = useState(false);
 
   const [autoSave, setAutoSave] = useState(profile.autoSave !== false);
+  const [showDelete, setShowDelete] = useState(profile.showDelete !== false);
   const [ntfyTopic, setNtfyTopic] = useState(profile.ntfyTopic ?? '');
 
   function handleSaveProfile() {
-    const p = { ...profile, name: name.trim() || profile.name, age: parseInt(age) || profile.age, autoSave, ntfyTopic: ntfyTopic.trim() || undefined };
+    const p = { ...profile, name: name.trim() || profile.name, age: parseInt(age) || profile.age, autoSave, showDelete, ntfyTopic: ntfyTopic.trim() || undefined };
     saveProfile(p);
     onProfileUpdate(p);
     setSaved(true);
@@ -77,6 +78,20 @@ export default function Settings({ profile, onProfileUpdate, onClose }: Props) {
             className={`settings-toggle ${autoSave ? 'on' : ''}`}
             onClick={() => setAutoSave(v => !v)}
             aria-label="自動記録の切り替え"
+          >
+            <span className="settings-toggle-knob" />
+          </button>
+        </div>
+
+        <div className="settings-toggle-row">
+          <div className="settings-toggle-info">
+            <span className="settings-toggle-label" dangerouslySetInnerHTML={{ __html: parseRuby('カレンダーに削除《さくじょ》ボタンを表示《ひょうじ》する') }} />
+            <span className="settings-toggle-desc" dangerouslySetInnerHTML={{ __html: parseRuby('OFFにすると記録《きろく》を削除《さくじょ》できなくなります') }} />
+          </div>
+          <button
+            className={`settings-toggle ${showDelete ? 'on' : ''}`}
+            onClick={() => setShowDelete(v => !v)}
+            aria-label="削除ボタン表示の切り替え"
           >
             <span className="settings-toggle-knob" />
           </button>

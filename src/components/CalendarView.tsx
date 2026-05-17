@@ -34,7 +34,7 @@ function weekDays(base: Date): Date[] {
   );
 }
 
-export default function CalendarView() {
+export default function CalendarView({ showDelete }: { showDelete: boolean }) {
   const [mode, setMode] = useState<ViewMode>('month');
   const [cur, setCur] = useState(new Date());
   const [records, setRecords] = useState<KimochiRecord[]>([]);
@@ -185,11 +185,13 @@ export default function CalendarView() {
                   </div>
                 </div>
                 {r.memo && <p className="cal-day-memo">{r.memo}</p>}
-                <button
-                  className="cal-day-del"
-                  onClick={() => handleDelete(r.id)}
-                  dangerouslySetInnerHTML={{ __html: parseRuby('削除《さくじょ》') }}
-                />
+                {showDelete && (
+                  <button
+                    className="cal-day-del"
+                    onClick={() => handleDelete(r.id)}
+                    dangerouslySetInnerHTML={{ __html: parseRuby('削除《さくじょ》') }}
+                  />
+                )}
               </div>
             ))
           )}

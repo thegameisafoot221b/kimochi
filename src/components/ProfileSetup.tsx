@@ -41,6 +41,7 @@ export default function ProfileSetup({ onComplete }: { onComplete: (p: Profile) 
       environments: envs.length ? envs : ['home'],
       style: style.length ? style : ['alone'],
       autoSave: true,
+      showDelete: true,
     });
   }
 

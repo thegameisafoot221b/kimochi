@@ -11,6 +11,7 @@ export interface Profile {
   environments: Environment[];
   style: UsageStyle[];
   autoSave: boolean;
+  showDelete: boolean;
   ntfyTopic?: string;
 }
 
